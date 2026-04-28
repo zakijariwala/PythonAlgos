@@ -1,0 +1,35 @@
+[
+  {
+    "file": "transformer.py",
+    "path": "transformers\\transformer.py",
+    "classes": [
+      {
+        "name": "ScaledDotProductAttention",
+        "docstring": "Computes scaled dot-product attention.\nTime Complexity: O(N^2 * D) where N is sequence length and D is embedding dimension.",
+        "complexity": "O(N^2 * D)",
+        "visualizable_points": [
+          "Attention Scores",
+          "Softmax",
+          "Context Vector"
+        ],
+        "methods": [
+          "__init__",
+          "forward",
+          "softmax"
+        ]
+      },
+      {
+        "name": "MinformerBlock",
+        "docstring": "A minimal Transformer block with Multi-Head Attention and Feed-Forward.\nTime Complexity: O(N^2 * D + N * D^2)",
+        "complexity": "O(N^2 * D + N * D^2)",
+        "visualizable_points": [
+          "QKV Projection"
+        ],
+        "methods": [
+          "__init__",
+          "forward"
+        ]
+      }
+    ]
+  }
+]

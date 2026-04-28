@@ -1,0 +1,82 @@
+This plan is structured as a **Technical Specification & Execution Manifest** designed for high-autonomy AI agents operating within the **Antigravity** environment. It prioritizes "Zero-Config" static deployment and minimizes client-side overhead by offloading heavy training to Web Workers.
+
+---
+
+## 🏗️ Project Architecture: "The Sentinel Visualizer"
+
+**Objective:** Build a WASM-powered, static-hosted explainer for Transformer/Attention logic.
+**Primary Tech Stack:** SvelteKit (Static Adapter), TensorFlow.js (WASM backend), HTML5 Canvas (High-perf Rendering).
+
+### 🤖 Agent Instruction: Environment Setup
+1.  Initialize a **SvelteKit** project using the `static-adapter` to ensure compatibility with GitHub Pages.
+2.  Enable **TypeScript** for strict type-safety across tensor shapes.
+3.  Configure **Antigravity’s** internal environment to allow cross-origin isolation (required for `SharedArrayBuffer` if using advanced multi-threading).
+
+---
+
+## 🛠️ Step 1: The "Parser" Agent (Knowledge Extraction)
+**Goal:** Create a bridge between the existing `python-algos` repo and the web frontend.
+
+* **Task:** Write a Python utility script that scans the repository.
+* **Input:** All files in `/transformers`, `/neural_networks`, and `/vectors`.
+* **Logic:**
+    * Extract docstrings, time complexity ($O$), and raw code.
+    * Identify "Visualizable Points" (e.g., lines where weights are updated or dot products are calculated).
+* **Output:** Generate a `manifest.json` in the `/static` folder of the web app containing the metadata for each algorithm.
+
+---
+
+## 🧠 Step 2: The "Engine" Agent (TFJS Minformer)
+**Goal:** Implement a "Minformer" (2-layer, 4-head Transformer) that trains live in the browser.
+
+* **Constraint:** Use **Web Workers**. The UI must never lag below 60FPS.
+* **Implementation:**
+    * Port the Python Transformer logic to **TensorFlow.js**.
+    * Initialize the model with a character-level dataset (e.g., Shakespeare or a small code snippet).
+    * **Feature Extraction:** Implement a "Hook" in the training loop that exports the **Attention Matrix** (Query $\times$ Key) at every 10th batch.
+* **Optimization:** Use the `tfjs-backend-wasm` for CPU-based users and `tfjs-backend-webgl` for GPU-accelerated users.
+
+
+
+---
+
+## 🎨 Step 3: The "Artist" Agent (Visualisation Layer)
+**Goal:** Render the complex math using high-performance Canvas APIs to keep the bundle size minimal.
+
+* **Heatmap Component:**
+    * Render an $N \times N$ grid where $N$ is the sequence length.
+    * Use a dynamic color scale (0.0 = dark, 1.0 = bright gold).
+    * **Entropy Toggle:** Overlay a line chart showing the *Average Attention Entropy* dropping as the model converges.
+* **Vector Space Plot:**
+    * Use **Three.js** (Tree-shaken) to render a 3D point cloud.
+    * Run a lightweight **PCA** (Principal Component Analysis) on the embedding weights.
+    * **Animation:** Transition the 3D points in real-time as the embeddings are updated via Backpropagation.
+* **LaTeX Rendering:** Use **KaTeX** for the Scaled Dot-Product formula:
+    $$\text{Attention}(Q, K, V) = \text{softmax}\left(\frac{QK^T}{\sqrt{d_k}}\right)V$$
+
+---
+
+## 🚀 Step 4: The "Deployment" Agent (CI/CD Pipeline)
+**Goal:** Ensure the site is "Zero-Maintenance" and hosted on GitHub Pages.
+
+* **Action:** Create a `.github/workflows/deploy.yml` file.
+* **Workflow:**
+    1.  Checkout the `python-algos` repo.
+    2.  Run the **Parser Agent's** script to generate `manifest.json`.
+    3.  Build the SvelteKit project.
+    4.  Deploy to the `gh-pages` branch.
+* **Backend Fallback:** If high-dimensional preprocessing is needed that exceeds browser capabilities, configure the agent to deploy a "Serverless" function to **Vercel** or **Hugging Face Spaces** (Free Tier) to act as a data provider.
+
+---
+
+## 🚦 Final Guardrails for Agents
+* **Bundle Limit:** The total JS payload must not exceed 1.5MB (including TFJS).
+* **Memory Safety:** Ensure `tf.dispose()` is called on every training iteration to prevent memory leaks in the browser.
+* **Accessibility:** Every visualization must have a "High Contrast" mode and text-based explanation for the training states.
+
+**Agent Execution Priority:**
+1.  `python-parser.py` (The Bridge)
+2.  `worker-transformer.ts` (The Engine)
+3.  `CanvasHeatmap.svelte` (The Visual)
+4.  `deploy-workflow.yml` (The Release)
+
